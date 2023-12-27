@@ -5,36 +5,36 @@ import org.mechdancer.symbol.linear.Hamiltonian
 import org.mechdancer.symbol.linear.Hessian
 import org.mechdancer.symbol.linear.NamedExpressionVector
 
-/** 变量空间 */
+/** Variable space */
 inline class VariableSpace(val variables: List<Variable>) {
-    /** 空间的维度 */
+    /** Dimensions of space */
     val dim get() = variables.size
 
-    /** 此空间上的平凡场 */
+    /** Ordinary field on this space */
     val ordinaryField get() = NamedExpressionVector(variables.associateWith { it })
 
-    /** 此空间上的哈密顿算子 */
+    /** Hamiltonian operator on this space */
     val hamiltonian get() = Hamiltonian(this)
 
-    /** 此空间上的海森算子 */
+    /** Hessian operator on this space */
     val hessian get() = Hessian(this)
 
-    /** 向量变为表达式向量 */
+    /** The vector becomes an expression vector */
     fun order(vector: Vector) =
         variables
             .mapIndexed { i, v -> v to Constant(vector[i]) }
             .toMap()
             .let(::NamedExpressionVector)
 
-    /** 求变量空间的交空间 */
+    /** Find the intersection space of variable spaces */
     operator fun times(others: VariableSpace) =
         variables(variables.toSet() intersect others.variables.toSet())
 
-    /** 求变量空间的并空间 */
+    /** Find the union space of variable spaces */
     operator fun plus(others: VariableSpace) =
         variables(variables + others.variables)
 
-    /** 求变量空间的差空间 */
+    /** Find the difference space of variable space */
     operator fun minus(others: VariableSpace) =
         variables(variables - others.variables)
 

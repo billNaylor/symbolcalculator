@@ -9,12 +9,12 @@ import org.mechdancer.symbol.linear.NamedExpressionVector
 import org.mechdancer.symbol.toDouble
 
 /**
- * 标准的完全梯度下降优化
+ * Standard full gradient descent optimization
  *
- * @param error 损失函数
- * @param space 变量空间
- * @param controller 梯度控制器
- * @return 优化步骤函数
+ * @param error loss function
+ * @param space variable space
+ * @param controller gradient controller
+ * @return optimization step function
  */
 fun batchGD(
     error: Expression,
@@ -38,11 +38,11 @@ fun batchGD(
 }
 
 /**
- * 使用牛顿迭代确定步长的最速下降法
+ * Steepest descent method using Newton iteration to determine step size
  *
- * @param error 损失函数
- * @param space 变量空间
- * @return 优化步骤函数
+ * @param error loss function
+ * @param space variable space
+ * @return optimization step function
  */
 fun fastestBatchGD(
     error: Expression,
@@ -57,20 +57,20 @@ fun fastestBatchGD(
 }
 
 /**
- * 采用均方损失函数且大步长优先的随机梯度下降法
+ * Stochastic gradient descent method using mean square loss function and large step size priority
  *
- * @param errors 样本损失函数
- * @param block 依赖的批量梯度下降函数
- * @return 优化步骤函数
+ * @param errors sample loss function
+ * @param block dependent batch gradient descent function
+ * @return optimization step function
  */
 inline fun stochasticGD(
     errors: List<Expression>,
     block: (error: Expression) -> OptimizeStep<NamedExpressionVector>
 ): OptimizeStep<NamedExpressionVector> {
     val dim = errors.size
-    // 样本步骤函数
+    // Sample step function
     val steps = errors.map(block)
-    // 迭代函数
+    // iterative function
     var i = 0
     return { steps[i++ % dim](it) }
 }

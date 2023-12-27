@@ -10,10 +10,10 @@ import org.mechdancer.symbol.linear.NamedExpressionVector
 import org.mechdancer.symbol.minus
 
 /**
- * 条件收集器
+ * Conditional collector
  *
- * 逐条输入方程、不等式和初始条件
- * 产生均方差表达式、变量约束条件和初始值
+ * Enter equations, inequalities and initial conditions one by one
+ * Generate mean square error expressions, variable constraints and initial values
  */
 class ConditionCollector {
     private var i = 0

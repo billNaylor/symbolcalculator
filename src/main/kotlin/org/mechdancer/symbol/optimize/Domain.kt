@@ -8,7 +8,7 @@ import org.mechdancer.symbol.linear.NamedExpressionVector
 import org.mechdancer.symbol.minus
 import org.mechdancer.symbol.plus
 
-/** 变量 [v] 在 [[min], [max]] 区间的约束条件 */
+/** Constraints on variable [v] in the interval [[min], [max]] */
 data class Domain(val v: Variable, val min: Constant, val max: Constant) {
     private val function by lazy {
         when {
@@ -18,7 +18,9 @@ data class Domain(val v: Variable, val min: Constant, val max: Constant) {
         }
     }
 
-    /** 代入表达式向量，若变量不在目标区域则产生一个线性损失项 */
+    /** Substituting into the expression vector,
+     * if the variable is not in the target area, a linear loss term is generated
+     */
     fun mapLinear(p: NamedExpressionVector) =
         (p[v] as? Constant)?.let {
             when {
@@ -28,7 +30,9 @@ data class Domain(val v: Variable, val min: Constant, val max: Constant) {
             }
         }
 
-    /** 代入表达式向量，若变量不在目标区域则产生一个指数损失项 */
+    /** Substituting into the expression vector,
+     *if the variable is not in the target area, an exponential loss term is generated.
+     */
     fun mapExp(p: NamedExpressionVector) =
         (p[v] as? Constant)?.let {
             when {

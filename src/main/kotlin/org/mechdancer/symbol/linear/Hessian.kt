@@ -7,16 +7,16 @@ import org.mechdancer.symbol.core.VariableSpace
 import org.mechdancer.symbol.mapParallel
 import org.mechdancer.symbol.times
 
-/** 海森算子 */
+/** Hessian operator */
 inline class Hessian(val space: VariableSpace) {
-    /** 求 [f] 数量场在此变量空间上的海森矩阵 */
+    /** Find the Hessian matrix of [f] quantity field on this variable space */
     operator fun times(f: Expression) =
         hessian(f.d().d(), space)
 
     companion object {
         fun hessian(ddf: Expression, space: VariableSpace): HessianMatrix {
             val d = space.variables.map(::Differential)
-            // 海森矩阵是对称矩阵，只保存、计算区下三角
+            // The Hessian matrix is ​​a symmetric matrix and only saves and calculates the lower triangle
             return sequence { for (r in space.variables.indices) for (c in 0..r) yield((d[r] * d[c]).`^-1`) }
                 .toList()
                 .mapParallel { ddf * it }

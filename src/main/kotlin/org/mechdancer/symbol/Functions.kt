@@ -8,10 +8,10 @@ import org.mechdancer.symbol.core.Constant.Companion.i
 import kotlin.math.E
 import kotlin.streams.toList
 
-/** 求表达式全微分 */
+/** Find the total differential of an expression */
 fun d(e: Expression) = e.d()
 
-// 表达式四则运算
+// Four arithmetic operations on expressions
 
 operator fun Expression.unaryMinus() = this * `-1`
 val Expression.`^-1` get() = Power[this, `-1`]
@@ -31,7 +31,7 @@ operator fun Number.minus(e: Expression) = -e + this
 operator fun Number.times(e: Expression) = e * this
 operator fun Number.div(e: Expression) = e.`^-1` * this
 
-// 幂指对构造
+// Power pair construction
 
 fun sqrt(e: Expression) = Power[e, Constant(.5)]
 
@@ -49,7 +49,8 @@ infix fun Expression.pow(others: Expression) =
         is Exponential -> Exponential[base, Product[member, others]]
         else           -> when (others) {
             is Constant -> pow(others.re)
-            // 对于幂指函数，取对数幂转化为基本初等函数的复合形式
+            // For power exponential functions, take the logarithmic power and transform it into
+            // the composite form of the basic elementary function.
             else        -> Exponential[Product[others, Ln[this]]]
         }
     }
@@ -66,7 +67,7 @@ fun sin(theta: Expression) = Sum[Exponential[theta * i] - Exponential[theta * -i
 fun cos(theta: Expression) = Sum[Exponential[theta * i] + Exponential[theta * -i]] / 2
 fun tan(theta: Expression) = sin(theta) / cos(theta)
 
-// 求和求积
+// sum and product
 
 fun Sequence<Expression>.sum() = Sum[toList()]
 fun Iterable<Expression>.sum() = Sum[toList()]
@@ -86,14 +87,14 @@ fun <T> Sequence<T>.productBy(block: (T) -> Expression) = Product[map(block).toL
 fun <T> Iterable<T>.productBy(block: (T) -> Expression) = Product[map(block)]
 fun <T> Array<T>.productBy(block: (T) -> Expression) = Product[map(block)]
 
-// 均方
+// mean square
 
 fun Sequence<Expression>.meanSquare() = toList().meanSquare()
 fun Iterable<Expression>.meanSquare() = toList().meanSquare()
 fun Collection<Expression>.meanSquare() = run { sumBy { it `^` 2 } / (2 * size) }
 fun Array<Expression>.meanSquare() = run { sumBy { it `^` 2 } / (2 * size) }
 
-// 其他
+// other
 
 fun Expression.toDouble() = (this as Constant).re
 

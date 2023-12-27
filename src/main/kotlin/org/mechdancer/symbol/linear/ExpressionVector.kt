@@ -11,7 +11,7 @@ import org.mechdancer.symbol.sumBy
 import org.mechdancer.symbol.times
 import kotlin.streams.toList
 
-/** 不具名的简化表达式向量 */
+/** unnamed vector of simplified expressions */
 inline class ExpressionVector(
     val expressions: List<Expression>
 ) : ExpressionStruct<Vector> {

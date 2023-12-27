@@ -4,7 +4,7 @@ import org.mechdancer.symbol.core.Constant
 import org.mechdancer.symbol.core.Expression
 import org.mechdancer.symbol.linear.NamedExpressionVector
 
-// 代入
+// Substitute
 
 class ValueCalculator internal constructor(e: Expression) {
     var expression = e

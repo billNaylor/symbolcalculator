@@ -9,14 +9,16 @@ import org.mechdancer.symbol.variable
 import kotlin.math.abs
 import kotlin.math.sign
 
-/** 构造取值范围结构 */
+/** Construct a value range structure */
 operator fun Variable.get(min: Constant, max: Constant) =
     Domain(this, min, max)
 
-/** 优化步骤函数 := 当前位置 -> (新位置, 实际步长) */
+/** Optimization step function:= current position -> (new position, actual step size) */
 typealias OptimizeStep<T> = (T) -> Pair<T, Double>
 
-/** 使用牛顿迭代求关于变量 [v] 的一元函数 [f] 极小值 */
+/** Use Newton iteration to find the minimum value of the one-variable function [f]
+ * with respect to the variable [v]
+ */
 fun newton(
     f: Expression,
     v: Variable
@@ -37,7 +39,7 @@ fun newton(
     }
 }
 
-/** 使用牛顿法确定最优下降率 */
+/** Determining the optimal rate of descent using Newton's method */
 internal fun fastestWithNewton(
     e: Expression,
     p: NamedExpressionVector,
@@ -49,7 +51,7 @@ internal fun fastestWithNewton(
     return next.substitute(l, Constant(a)) to dp.length().toDouble() * abs(a)
 }
 
-/** 映射不等式约束并用牛顿法最速下降 */
+/** Mapping inequality constraints and steepest descent using Newton's method */
 internal inline fun Array<out Domain>.fastestOf(
     e: Expression,
     p: NamedExpressionVector,
@@ -65,7 +67,7 @@ internal inline fun Array<out Domain>.fastestOf(
         fastestWithNewton(e, p, dp)
 }
 
-/** 优化计算 */
+/** Optimization calculation */
 inline fun <T> optimize(
     init: T,
     maxTimes: Int,
@@ -81,7 +83,7 @@ inline fun <T> optimize(
     return t
 }
 
-/** 递推计算 */
+/** Recursive calculation */
 fun <T> recurrence(init: T, block: (T) -> T) =
     sequence {
         var t = init
@@ -91,7 +93,7 @@ fun <T> recurrence(init: T, block: (T) -> T) =
         }
     }
 
-/** 收敛或退出 */
+/** Convergence or exit */
 inline fun <T : Any> Sequence<T>.firstOrLast(block: (T) -> Boolean): T {
     var last: T? = null
     for (t in this) {
@@ -101,6 +103,6 @@ inline fun <T : Any> Sequence<T>.firstOrLast(block: (T) -> Boolean): T {
     return last ?: throw NoSuchElementException("Sequence is empty.")
 }
 
-/** 收集条件 */
+/** Collection conditions */
 inline fun conditions(block: ConditionCollector.() -> Unit) =
     ConditionCollector().also(block).build()

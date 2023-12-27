@@ -2,11 +2,11 @@ package org.mechdancer.symbol.optimize
 
 import org.mechdancer.algebra.core.Vector
 
-/** 线性控制器 := (向量) -> 向量 */
+/** Linear controller := (vector) -> vector */
 interface LinearController {
-    /** 输入输出向量必须有确定的维数，以便进行初始化 */
+    /** The input and output vectors must have certain dimensions in order to be initialized. */
     val dim: Int
 
-    /** 信号通过控制器 */
+    /** Signal passes through the controller */
     operator fun invoke(signal: Vector): Vector
 }

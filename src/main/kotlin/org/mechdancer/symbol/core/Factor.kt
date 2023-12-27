@@ -11,66 +11,67 @@ import kotlin.math.pow
 import kotlin.math.sign
 
 /**
- * 因子，作为积式成分而不可合并的对象
+ * Factor, an object that cannot be combined as a product component
  *
- * 因子就是基本初等函数
- * 基本初等函数都是有且只有一个参数（表达式）的函数
- * 基本初等函数的加、减、乘、除、复合称作初等函数
+ * Factors are basic elementary functions
+ * Basic elementary functions are functions with one and only one parameter (expression)
+ * The addition, subtraction, multiplication, division and composition
+ * of basic elementary functions are called elementary functions
  */
 sealed class Factor : FactorExpression {
-    /** 初等函数都是一元函数，有且只有一个初等函数参数 */
+    /** Elementary functions are all unary functions, with one and only one elementary function parameter */
     internal abstract val member: FunctionExpression
 
-    /** 判断是否基本初等函数 */
+    /** Determine whether it is a basic elementary function */
     val isBasic
         get() = member is Variable
 
-    /** 复合函数求导的链式法则 */
+    /** Chain rule for derivation of composite functions */
     final override fun d() = Product[df, member.d()]
 
     /**
-     * 复合函数的代入法则
+     * Substitution rules for composite functions
      *
-     * 检查函数的形式，基本初等函数直接代入，否则展开代入
+     * Check the form of the function, and substitute the basic elementary functions directly,
+     * otherwise expand and substitute
      */
     final override fun substitute(from: Expression, to: Expression) =
         when (from) {
-            this   -> to
+            this -> to
             member -> substituteMember(to)
-            else   -> substituteMember(member.substitute(from, to))
+            else -> substituteMember(member.substitute(from, to))
         }
-
     /**
-     * 复合函数的多重带入法则
+     * The multiple bring-in rule for composite functions
      *
-     * 检查函数的形式，基本初等函数直接代入，否则展开代入
+     * Check the form of the function, and substitute the basic elementary functions directly, otherwise expand and substitute
      */
     final override fun substitute(map: Map<out FunctionExpression, Expression>) =
         map[this]
         ?: map[member]?.let(this::substituteMember)
         ?: substituteMember(member.substitute(map))
 
-    /** 对链式法则展开一层 */
+    /** Expand one layer of the chain rule */
     protected abstract val df: Expression
 
-    /** 代入构造函数 */
+    /** Substitute into constructor */
     protected abstract fun substituteMember(e: Expression): Expression
 
-    /** 对复合函数的成分加括号 */
+    /** Add brackets to the components of the composite function */
     protected val parameterString get() = if (isBasic) "$member" else "($member)"
 
-    /** 对复合函数的成分加括号 */
+    /** Add brackets to the components of the composite function */
     protected val parameterTex get() = if (isBasic) member.toTex() else "(${member.toTex()})"
 }
 
-/** 幂因子 */
+/** Power factor */
 class Power private constructor(
     override val member: BaseExpression,
     val exponent: Constant
 ) : Factor(),
     ExponentialExpression {
     init {
-        // 作为导数算子，阶数只能是整数
+        // As a derivative operator, the order can only be an integer
         if (member is Differential) require(exponent.re == exponent.re.toInt().toDouble())
     }
 
@@ -120,7 +121,7 @@ class Power private constructor(
     }
 }
 
-/** 指数因子 */
+/** exponential factor */
 class Exponential private constructor(
     val base: Constant,
     override val member: ExponentialExpression
@@ -167,7 +168,7 @@ class Exponential private constructor(
     }
 }
 
-/** 自然对数因子 */
+/** natural logarithm factor */
 class Ln private constructor(
     override val member: LnExpression
 ) : Factor(),

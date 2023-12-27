@@ -8,7 +8,7 @@ import org.mechdancer.symbol.core.Variable
 import org.mechdancer.symbol.core.VariableSpace
 import org.mechdancer.symbol.core.parallelism
 
-/** 表达式向量 */
+/** expression vector */
 inline class NamedExpressionVector(val expressions: Map<Variable, Expression>) {
     val dim get() = expressions.size
     operator fun get(v: Variable) = expressions[v]

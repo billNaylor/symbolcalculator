@@ -6,7 +6,7 @@ import org.mechdancer.algebra.function.vector.plus
 import org.mechdancer.algebra.function.vector.times
 import org.mechdancer.algebra.implement.vector.listVectorOfZero
 
-/** NAG 方法 := 增益 + 低通滤波 + PD 控制 */
+/** NAG Method := Gain + Low Pass Filter + PD Control */
 @Suppress("NonAsciiCharacters")
 class NagMethod(
     dim: Int,

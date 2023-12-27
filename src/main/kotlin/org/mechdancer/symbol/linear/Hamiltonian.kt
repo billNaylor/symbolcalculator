@@ -5,9 +5,9 @@ import org.mechdancer.symbol.core.Expression
 import org.mechdancer.symbol.core.VariableSpace
 import org.mechdancer.symbol.div
 
-/** 哈密顿算子（梯度算子） */
+/** Hamiltonian operator (gradient operator) */
 inline class Hamiltonian(private val space: VariableSpace) {
-    /** 求 [f] 数量场在此变量空间上的梯度 */
+    /** Find the gradient of the [f] quantity field on this variable space */
     operator fun times(f: Expression) =
         gradient(f.d(), space)
 
