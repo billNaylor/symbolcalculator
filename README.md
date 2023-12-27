@@ -1,58 +1,59 @@
-# 符号计算器
+# Symbolic Calculator
 
-实现了初等函数的符号运算，现已支持：
-- 部分基本初等函数：常数函数、幂函数、指数函数、对数函数
+Implemented symbolic operations on elementary functions and now supports:
+- Some basic elementary functions: constant functions, power functions, exponential functions, logarithmic functions
 
-- 部分初等函数：对上述基本初等函数进行加、减、乘、除和复合运算
+- Some elementary functions: perform addition, subtraction, multiplication, division and compound operations on the above basic elementary functions.
 
-- 上述初等函数的微分和偏导数计算
+- Calculation of differentials and partial derivatives of the above elementary functions
 
-- 表达式代换
+- Expression substitution
 
-- 无约束优化（求表达式极小值点）
+- Unconstrained optimisation (finding the minimum point of the expression)
 
-- 不等式约束优化
+- Inequality constrained optimisation
 
-  > 不是内点法，效果可能不对
+  > It is not an interior point method, so the effect may not be correct.
 
-## 使用指南
+## User's guidance
 
-### 类型
+### Type
 
-库中重要的类型包括：
+Important types in the library include:
 
-- 表达式 `Expression`
+- Expression `Expression`
 
-  表达式是所有受支持的可微分表达式集合中的元素。
+  An expression is an element of the set of all supported differentiable expressions.
 
-- 变量 `Variable`
+- Variable `Variable`
 
-  变量指示运算中的符号元素。
+  Variables indicate symbolic elements in operations.
 
-### 录入和构造
+### Entry and construction
 
-借助丰富的扩展函数，用户可自然地录入表达式：
+With the help of rich extension functions, users can enter expressions naturally:
 
-- 定义变量
+- define variables
 
   ```kotlin
-  val x by variable // x 是一个名为 "x" 的变量
-  val y by variable // y 是一个名为 "y" 的变量
-  val variable by variable // variable 是一个名为 "variable" 的变量
-  val t = Variable("ttt") // t 是一个名为 "ttt" 的变量
+  val x by variable // x is a variable named "x"
+  val y by variable // y is a variable named "y"
+  val variable by variable // variable is a variable named "variable"
+  val t = Variable("ttt") // t is a variable named "ttt"
   
-  // points 是包含 {x1, y1, z1, x2, ... , z5} 这 15 个变量的变量空间
+  // points defines the variable space of {x1, y1, z1, x2, ... , z5}
   val points by variableSpace("x", "y", "z", indices = 1..5)
   
-  // xn 是包含 {xa, xb, xc} 这 3 个变量的变量空间
+  // xn is the variable space containing the three variables {xa, xb, xc}
   val xn by variableSpace("x", indices = listOf("a", "b", "c"))
   ```
 
-  > 变量空间：变量空间是用于求梯度的辅助类型，多元数量函数 `y = f(x, y, z, ...)` 可以看作一个空间 `{x, y, z, ...}` 上的数量场，而其在空间 `{x, y, z, ...}` 上的梯度表示为 `{∂f/∂x, ∂f/∂y, ∂f/∂z, ...}`，如果把某个变量 `x` 视作参数，也可求其在空间 `{y, z, ...}` 上的梯度 `{∂f(x)/∂y, ∂f(x)/∂z, ...}`。因此，必须指明在哪个空间上，梯度才有意义。
+  > Variable space: Variable space is an auxiliary type used to find gradients. The multivariate quantity function `y = f(x, y, z, ...)` can be regarded as a space `{x, y, z, ...} The quantity field on `, and its gradient on the space `{x, y, z, ...}` is expressed as `{∂f/∂x, ∂f/∂y, ∂f/∂z, .. .}`, if a certain variable `x` is regarded as a parameter, its gradient on the space `{y, z, ...}` can also be calculated `{∂f(x)/∂y, ∂f( x)/∂z, ...}`. Therefore, it is necessary to specify on which space the gradient is meaningful.
 
-- 定义表达式
 
-  下面是一些表达式的示例：
+- Define expressions
+
+  Here are some examples of expressions:
 
   ```kotlin
   val x by variable
@@ -62,66 +63,66 @@
   val f2 = ln(9 * x - 7)
   
   val f3 = sqrt((x `^` 2) + (y `^` 2))
-  // `^` 是乘方的符号形式，也可写作 pow
-  // 注意中缀表达式具有最低运算优先级，低于 +、-，因此作为和式、积式成分必须加括号
+  // `^` is the symbolic form of power, and can also be written as pow
+  // Note that infix expressions have the lowest operation priority, lower than + and -, so parentheses must be added as components of sums and products.
   ```
 
-  只要其中至少包含一个未知数成分或其他表达式，整个对象会被自动推断为表达式。
+  As long as it contains at least one unknown component or other expression, the entire object is automatically inferred as an expression.
 
-  表达式可以在初等函数的范围内复合：
+  Expressions can be compounded within the scope of elementary functions:
 
   ```kotlin
   val f: Expression = ...
   val f1 = E `^` f // E === kotlin.math.E
   ```
   
-  如果有必要定义没有任何未知数存在的表达式（常数表达式），可使用常数表达式：
+  If it is necessary to define an expression without any unknowns (constant expression), use a constant expression:
 
   ```kotlin
-  // Constant(Double) 将一个有理数转换为常数表达式
+  // Constant(Double) Convert a rational number to a constant expression
   val c1 = Constant(1.0 + 2 + 3)
   
-  // 这样也是正确的，因为常数表达式也是表达式成分，c2 会被推断为表达式
+  // This is also correct because the constant expression is also an expression component and c2 will be inferred as an expression
   val c2 = Constant(1.0) + 2 + 3
   ```
 
-- 微分
+- differential
 
-  实际上微分也是一种表达式运算，将一个表达式转化为其微分式的表达式：
+  In fact, differential is also an expression operation, which converts an expression into the expression of its differential:
 
   ```kotlin
   val x by variable
   val y by variable
   val f = (sqrt(x * x + y) + 1) `^` 2
   val df = d(f) 
-  println(df) // 打印：2 x dx + 2 (x^2 + y)^-0.5 x dx + dy + (x^2 + y)^-0.5 dy
+  println(df) // Print：2 x dx + 2 (x^2 + y)^-0.5 x dx + dy + (x^2 + y)^-0.5 dy
   
   ...
   ```
 
-  `dx`、`dy` 是所谓微元的东西，作为一种可乘除相消的因子参与运算。
+  `dx`、`dy` It is a so-called microelement, which participates in operations as a factor that can be multiplied, divided and canceled.
 
-  微分运算通过和式、积式和复合函数求导的链式法则排出函数部分，保留变量的微元。
+  Differential operations eliminate the function part through the chain rule of derivation of sums, products and composite functions, retaining the microelements of variables.
 
-  若 `$u`、`$v` 为两个不同的变量，定义 `d d $u ≡ d$u / d$v ≡ d$v / d$u ≡ Constant(.0)`。
+  If `$u` and `$v` are two different variables, define `d d $u ≡ d$u / d$v ≡ d$v / d$u ≡ Constant(.0)`.
 
-  因此，`d(f)/d(x)` 就是 `f(x,y)` 对 `x` 的偏导数：
+  Therefore, `d(f)/d(x)` is the partial derivative of `f(x,y)` with respect to `x`:
 
   ```kotlin
   ...
   
   val dfx = df / d(x)
-  println(dfx) // 打印：2 x + 2 (x^2 + y)^-0.5 x
+  println(dfx) // Print：2 x + 2 (x^2 + y)^-0.5 x
   
   ...
   ```
 
-  可以保存多重微分式，降低求高阶导数的开销：
+  Multiple differentials can be saved and the cost of finding higher-order derivatives can be reduced:
 
   ```kotlin
   ...
   
-  val ddf = d(df) // 这里实际上完成了全部的微分运算，所谓“求偏导”只是微分项的指数加减法
+  val ddf = d(df) // All differential operations are actually completed here. The so-called "partial derivative" is just the exponential addition and subtraction of differential terms.
   val dx = d(x)
   val dy = d(y)
   
@@ -136,34 +137,34 @@
   ∂2f / ∂y2  = -0.5 (x^2 + y)^-1.5
   ```
 
-- 代入
+- Substitute
 
-  代入是化简、消元一类操作最常见的形式。
+  Substitution is the most common form of operations such as simplification and elimination.
 
   ```kotlin
   val x by variable
   val y by variable
   
   val f = x `^` 2
-  println(f.substitute(x, 2)) // 打印：4
-  println(f.substitute { this[x] = x * y }) // 打印：x^2 y^2
+  println(f.substitute(x, 2)) // Print：4
+  println(f.substitute { this[x] = x * y }) // Print：x^2 y^2
   ```
 
-  下列代换都受到支持：
+  The following substitutions are supported:
 
-  - 求值：把变量代换为常量
-  - 复合展开：把变量代换为表达式
-  - 换元：把表达式带换成变量
+  - Evaluation: Substitute variables into constants
+  - Compound expansion: Substitute variables into expressions
+  - Substitution: replace the expression with a variable
 
-  > 但是暂时还无法实现对和式和积式的部分代换：例如从 `4 x + 4 y` 中代换掉 `x + y` 或从 `x y z` 中代换掉 `x y`。
+  > However, it is not yet possible to realize partial substitutions of sums and products: for example, replacing `x + y` from `4 x + 4 y` or replacing `x y` from `x y z`.
 
-- 求梯度
+- Find the gradient
 
-  求梯度需要了解另一类对象，矢量场 `Field`，其主要成员是一个变量到表达式的映射，`{x1 -> f1(x1), x2 -> f2(x2), ... , xn -> fn(xn)}`。
+  To find the gradient, you need to understand another type of object, the vector field `Field`, whose main member is a mapping from a variable to an expression, `{x1 -> f1(x1), x2 -> f2(x2), ... , xn -> fn(xn)}`.
   
-  这可以看作一个各维度具名且由表达式构成的 n 维向量函数，其输入输出在变量空间 `{x1, x2, ... ,xn}` 中。
+  This can be viewed as an n-dimensional vector function whose dimensions are named and composed of expressions. Its input and output are in the variable space `{x1, x2, ... ,xn}`.
   
-  构造变量空间和标量场表达式后可计算梯度：
+  The gradient can be calculated after constructing the variable space and scalar field expressions:
   
   ```kotlin
   val space by variableSpace(...)
@@ -171,7 +172,7 @@
   val grad = space.gradientOf(f)
   ```
   
-  矢量场可求模转化为标量场：
+  Vector fields can be transformed modulo into scalar fields:
   
   ```kotlin
   class Field{
@@ -183,96 +184,95 @@
   }
   ```
   
-## 求解无约束优化问题
+## Solve unconstrained optimization problems
 
-  ### 形式
+  ### Form
 
-  无约束优化问题指的是：
+  Unconstrained optimization problems refer to:
 
-  根据 `n` 条线索 `{f<i>(x) == 0 | i ∈ [1,n]}`，寻找最优的 `x` 的问题。
+  The problem of finding the optimal `x` based on `n` equations `{f<i>(x) == 0 | i ∈ [1,n]}`.
 
-  > 其中 `x` 是 `ExpressionVector`，这是一种各维度具名的表达式向量。
+  > where `x` is an `ExpressionVector`, a vector of expressions over `n` dimensions.
   >
-  > 具名是为了方便部分在多个不同变量空间上操作。
+  > Named to facilitate partial operations on multiple different variable spaces.
 
-  ### 损失函数
+  ### Loss function
 
-  求解无约束优化问题，第一步是把线索转化为损失函数，把找到最优解的问题转化为求损失函数极小值的问题。
+  To solve an unconstrained optimisation problem, the first step is to convert equations into a loss function, and convert the problem of finding the optimal solution into the problem of finding the minimum value of the loss function.
 
-  最常用的损失函数是**均方差**：`e(x) = Σi (f<i>(x))^2 / 2n`。
-
-  ### 随机化
-
-  有 2 种方式使用线索的方式：
-
-  - *批量* - 每次迭代都使用所有线索
+  The most commonly used loss function is the mean square error: `e(x) = Σi (f<i>(x))^2 / 2n`.
   
-  - *随机* - 每次迭代使用 1 条线索
+  ### Randomization
 
-  批量方法适用于变量空间较小的问题。
+  There are 2 ways to use equation:
 
-  这类问题每次迭代比较快，因此主要优化方向为**提高准确性**和**减小迭代次数**。一次使用全部线索可以找到全局最优的迭代方向，振荡可能性较小。
+  - *Batch* - use all leads for each iteration
+  
+  - *random* - use 1 equation per iteration
 
-  随机方法适用于变量空间较大，或有许多相似线索（病态）的问题。
+  Batch methods are suitable for problems with a small variable space.
 
-  若变量空间很大，一次求得全部梯度的成本较高，且即使是强凸的问题，极值点附近也难以得到好的步长，因此不太可能得到精度特别高的解。
+  Each iteration of this type of problem is relatively fast, so the main optimisation directions are **improve accuracy** and **reduce the number of iterations**. Using all equations at once can find the globally optimal iteration direction, with less possibility of oscillation.
 
-  对于相似但不完全相同的两条线索，批量求解总是付出两倍的计算开销，但随机优化时，只要对使用线索的顺序稍作优化，就可以省去这部分开销。另外，变量空间很大的问题，病态的可能性也很高。
+  Stochastic methods are suitable for problems with a large variable spaces or problems with many similar equations (pathological).
 
-  令有一次使用一部分线索的*小批量*方法，属于这两种方法的综合形式。
+  If the variable space is large, the cost of obtaining all the gradients at once is high, and even for strongly convex problems, it is difficult to obtain a good step size near the extreme point, so it is unlikely to obtain a particularly high-precision solution.
 
-  对于需要精度较高，变量空间又很大的问题，可以随着迭代逐步提高每次迭代使用的线索量，以同时获得这些方案的优势。
+  For two equations that are similar but not identical, batch solving often costs twice as much computational overhead. However, during random optimisation, this cost can be saved by slightly optimising the order of using equations. In addition, problems with a large variable space have a high possibility of pathogenesis.
 
-  ### 方向
+  The *minimum batch* method, which uses a subset of equations at a time, is a combined form of these two methods.
 
-  每一次迭代，首先要决定在变量空间上前进的方向。对于求损失函数极值的问题，方向由损失函数的一阶或二阶微分决定。
+  For problems that require high precision and a large variable space, the number of equations used in each iteration can be gradually increased over the iterations to obtain the advantages of these solutions at the same time.
 
-  - 一阶方法 - 梯度下降法
-  - 二阶方法 - 牛顿法
+  ### direction
 
-  > 对于牛顿法，有以下 2 条注意事项：
+  For each iteration, we must first decide the direction to move forward in the variable space. For the problem of finding the extreme value of the loss function, the direction is determined by the first or second order differential of the loss function.
+
+  - First order method - Gradient descent method
+  - Second order method - Newton's method
+
+  > For Newton's method, there are the following 2 things to note:
   >
-  > - 由于需要海森矩阵可逆，故要求损失函数与变量空间中全部维度相关，所以随机化迭代不太可能适用牛顿法
-  > - 牛顿法找到的是去往最近导函数零点的方向，这有可能是极大值点、极小值点或鞍点，因此通常会将牛顿方向与梯度方向求点积，若点积不大于 0，说明此次牛顿法找到的不是梯度下降方向，大概率不通向极小值点，此时可以退化到一阶方法以保证稳定性。
+  > - Since the Hessian matrix is ​​required to be invertible, the loss function is required to be related to all dimensions in the variable space, so the randomized iteration is unlikely to apply Newton's method
+  > - Newton's method finds the direction to the nearest zero point of the derivative function, which may be the maximum point, minimum point or saddle point. Therefore, the dot product of the Newton direction and the gradient direction is usually calculated. If the dot product is not greater than 0, indicating that the direction found by Newton's method this time is not the gradient descent direction, and there is a high probability that it does not lead to the minimum point. At this time, it can be degraded to the first-order method to ensure stability.
 
-  ### 步长
+  ### step size
 
-  决定方向后，需要再决定在方向上前进的步长。步长有 2 种决定方法：
+  After deciding the direction, you need to decide the step length in the direction. There are 2 ways to determine the step size:
 
-  - 修饰 - 步长与方向同时从微分得到，通常是梯度的模长乘上一个固定系数
-  - 再优化 - 确定方向后，求损失函数的方向导数，在方向导数上再搜索极小值
+  - Modification - the step length and direction are obtained from the differential at the same time, usually the module length of the gradient multiplied by a fixed coefficient
+  - Re-optimization - After determining the direction, find the directional derivative of the loss function, and then search for the minimum value on the directional derivative.
 
-  ### 常见组合
+  ### Common combinations
 
-|   方法名称   | 随机化 | 方向 |  步长  |
-| :----------: | :----: | :--: | :----: |
-|   梯度下降   |  批量  | 一阶 |  修饰  |
-| 随机梯度下降 |  随机  | 一阶 |   -    |
-|   最速下降   |  批量  | 一阶 | 再优化 |
-|    牛顿法    |  批量  | 二阶 |  修饰  |
-|  阻尼牛顿法  |  批量  | 二阶 | 再优化 |
+| method name                | randomization | direction    | step size       |
+| :----------:               | :----:        | :--:         | :----:          |
+| Gradient Descent           | Batch         | First Order  | Decoration      |
+| stochastic gradient descent| stochastic    | first order  | -               |
+| Steepest descent           | Batch         | First order  | Re-optimization |
+| Newton's method            | Batch         | Second order | Modification    |
+| Damped Newton method       | Batch         | Second order | Re-optimization |
 
-  ### 示例
+  ### Example
 
   ```kotlin
-  // 变量空间
+  // variable space
   val space: VariableSpace
-  // 线索集
+  // equation set
   val samples: List<Expression>
-  // 均方损失函数
+  //Mean square loss function
   val error = samples.map { it `^` 2 / (2 * samples.size) }
-  // 梯度下降
+  // gradient descent
   batchGD(error.sum(), space) { l -> 1.0 * l }
-  // 最速下降
+  // fastest descent
   fastestBatchGD(error.sum(), space)
-  // 随机梯度下降
+  // stochastic gradient descent
   stochasticGD(error) { batchGD(it, space) { l -> 1.0 * l } }
-  // 随机化最速下降
+  // Randomized steepest descent
   stochasticGD(error) { fastestBatchGD(it, space) }
-  // 牛顿法
+  // Newton's method
   newton(error.sum(), space)
-  // 阻尼牛顿法
+  // Damped Newton method
   dampingNewton(error.sum(), space)
   ```
-
   
