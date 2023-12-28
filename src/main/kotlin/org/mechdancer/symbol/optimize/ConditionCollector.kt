@@ -14,6 +14,11 @@ import org.mechdancer.symbol.minus
  *
  * Enter equations, inequalities and initial conditions one by one
  * Generate mean square error expressions, variable constraints and initial values
+ *
+ * 条件收集器
+ *
+ * 逐条输入方程、不等式和初始条件
+ * 产生均方差表达式、变量约束条件和初始值
  */
 class ConditionCollector {
     private var i = 0

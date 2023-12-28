@@ -10,6 +10,8 @@ import org.mechdancer.symbol.sum
 
 /**
  * Each anchor point corresponds to a meaningful movement of the label
+ *
+ * 每个定位点对应标签的一次有意义的移动
  */
 data class Position(
     val beacon: Beacon,

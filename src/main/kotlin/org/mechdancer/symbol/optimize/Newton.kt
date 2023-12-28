@@ -18,6 +18,13 @@ import org.mechdancer.symbol.linear.NamedExpressionVector
  * @param space variable space
  * @return optimization step function
  */
+/**
+ * 基础多元牛顿迭代法
+ *
+ * @param error 损失函数
+ * @param space 变量空间
+ * @return 优化步骤函数
+ */
 fun newton(
     error: Expression,
     space: VariableSpace
@@ -44,6 +51,12 @@ fun newton(
  * @param error loss function
  * @param space variable space
  * @return optimization step function
+ *
+ * 阻尼牛顿迭代优化
+ *
+ * @param error 损失函数
+ * @param space 变量空间
+ * @return 优化步骤函数
  */
 fun dampingNewton(
     error: Expression,
@@ -51,6 +64,7 @@ fun dampingNewton(
     vararg domains: Domain
 ): OptimizeStep<NamedExpressionVector> {
     // differential
+    // 微分
     val df = error.d()
     val gradient = gradient(df, space).toFunction(space)
     val hessian = hessian(df.d(), space).toFunction(space)
@@ -59,6 +73,7 @@ fun dampingNewton(
         val g = gradient(v)
         val h = hessian(v).inverse() * g
         // Determine the optimal descent direction
+        // 确定最优下降方向
         val dp = if (g dot h < 0) g else h
         domains.fastestOf(error, p, space.order(dp), Domain::mapLinear)
     }

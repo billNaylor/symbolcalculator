@@ -5,16 +5,23 @@ import org.mechdancer.geometry.angle.toRad
 import java.text.DecimalFormat
 import kotlin.math.*
 
-/** Constant complex number with real part [re], imaginary part [im] */
+/**
+ * Constant complex number with real part [re], imaginary part [im]
+ *
+ * 实部 [re]，虚部 [im] 的常复数
+ */
 data class Constant(val re: Double, val im: Double = .0)
     : Expression, Comparable<Constant> {
     /** Model length */
+    /** 模长 */
     val norm by lazy { hypot(re, im) }
 
     /** argument */
+    /** 幅角 */
     val arg by lazy { atan2(im, re) }
 
     /** conjugate */
+    /** 共轭 */
     val conjugate get() = Constant(re, -im)
 
     override fun d() = `0`

@@ -18,7 +18,11 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
-/** 信号定义 */
+/**
+ * Signal definition
+ *
+ * 信号定义
+ */
 class Signal(val t0: Int = 0, val values: Vector) {
     val length get() = values.dim
 
@@ -92,6 +96,7 @@ fun main() {
     }
 }
 
+// sampling
 // 采样
 private fun ClosedFloatingPointRange<Double>.sample(
     step: Double,
@@ -105,6 +110,7 @@ private fun ClosedFloatingPointRange<Double>.sample(
         }
     }.toList().toListVector()
 
+// Image signal
 // 画信号
 private fun RemoteHub.paint(topic: String, signal: Signal) =
     signal.values.toList()

@@ -8,10 +8,15 @@ import org.mechdancer.symbol.core.Constant.Companion.i
 import kotlin.math.E
 import kotlin.streams.toList
 
-/** Find the total differential of an expression */
+/**
+ * Find the total differential of an expression
+ *
+ * 求表达式全微分
+ */
 fun d(e: Expression) = e.d()
 
 // Four arithmetic operations on expressions
+// 表达式四则运算
 
 operator fun Expression.unaryMinus() = this * `-1`
 val Expression.`^-1` get() = Power[this, `-1`]
@@ -32,6 +37,7 @@ operator fun Number.times(e: Expression) = e * this
 operator fun Number.div(e: Expression) = e.`^-1` * this
 
 // Power pair construction
+// 幂指对构造
 
 fun sqrt(e: Expression) = Power[e, Constant(.5)]
 
@@ -51,6 +57,7 @@ infix fun Expression.pow(others: Expression) =
             is Constant -> pow(others.re)
             // For power exponential functions, take the logarithmic power and transform it into
             // the composite form of the basic elementary function.
+            // 对于幂指函数，取对数幂转化为基本初等函数的复合形式
             else        -> Exponential[Product[others, Ln[this]]]
         }
     }
@@ -68,6 +75,7 @@ fun cos(theta: Expression) = Sum[Exponential[theta * i] + Exponential[theta * -i
 fun tan(theta: Expression) = sin(theta) / cos(theta)
 
 // sum and product
+// 求和求积
 
 fun Sequence<Expression>.sum() = Sum[toList()]
 fun Iterable<Expression>.sum() = Sum[toList()]
@@ -88,6 +96,7 @@ fun <T> Iterable<T>.productBy(block: (T) -> Expression) = Product[map(block)]
 fun <T> Array<T>.productBy(block: (T) -> Expression) = Product[map(block)]
 
 // mean square
+// 均方
 
 fun Sequence<Expression>.meanSquare() = toList().meanSquare()
 fun Iterable<Expression>.meanSquare() = toList().meanSquare()
@@ -95,6 +104,7 @@ fun Collection<Expression>.meanSquare() = run { sumBy { it `^` 2 } / (2 * size) 
 fun Array<Expression>.meanSquare() = run { sumBy { it `^` 2 } / (2 * size) }
 
 // other
+// 其他
 
 fun Expression.toDouble() = (this as Constant).re
 

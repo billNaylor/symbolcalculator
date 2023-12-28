@@ -15,6 +15,13 @@ import org.mechdancer.symbol.toDouble
  * @param space variable space
  * @param controller gradient controller
  * @return optimization step function
+ *
+ * 标准的完全梯度下降优化
+ *
+ * @param error 损失函数
+ * @param space 变量空间
+ * @param controller 梯度控制器
+ * @return 优化步骤函数
  */
 fun batchGD(
     error: Expression,
@@ -44,6 +51,13 @@ fun batchGD(
  * @param space variable space
  * @return optimization step function
  */
+/**
+ * 使用牛顿迭代确定步长的最速下降法
+ *
+ * @param error 损失函数
+ * @param space 变量空间
+ * @return 优化步骤函数
+ */
 fun fastestBatchGD(
     error: Expression,
     space: VariableSpace,
@@ -62,6 +76,13 @@ fun fastestBatchGD(
  * @param errors sample loss function
  * @param block dependent batch gradient descent function
  * @return optimization step function
+ */
+/**
+ * 采用均方损失函数且大步长优先的随机梯度下降法
+ *
+ * @param errors 样本损失函数
+ * @param block 依赖的批量梯度下降函数
+ * @return 优化步骤函数
  */
 inline fun stochasticGD(
     errors: List<Expression>,

@@ -2,18 +2,26 @@ package org.mechdancer.symbol.core
 
 import org.mechdancer.symbol.core.Constant.Companion.`1`
 
-/** Differentiable expression */
+/**
+ * Differentiable expression
+ *
+ * 可微表达式
+ */
 interface Expression : ExpressionStruct<Double> {
     /** Find the total differential of the expression */
+    /** 求表达式全微分 */
     fun d(): Expression
 
     /** Will use [from] [to] substitute */
+    /** 将 [from] 用 [to] 代换 */
     fun substitute(from: Expression, to: Expression): Expression
 
     /** Will try to replace keys with values ​​from [map] */
+    /** 将尽量用 [map] 中的键用值代换 */
     fun substitute(map: Map<out FunctionExpression, Expression>): Expression
 
     /** Specify the structure with respect to the variable [v], and the construction brings in the operation closure */
+    /** 指定结构关于变量 [v]，构造带入运算闭包 */
     fun toFunction(v: Variable): (Double) -> Double
 
     override fun equals(other: Any?): Boolean
@@ -23,6 +31,7 @@ interface Expression : ExpressionStruct<Double> {
     fun toTex(): TeX = toString()
 
     // region Provide optimization opportunities for operations with constants
+    // region 为与常数之间的运算提供优化机会
 
     operator fun plus(c: Constant): Expression = Sum[c, this]
     operator fun minus(c: Constant): Expression = Sum[-c, this]

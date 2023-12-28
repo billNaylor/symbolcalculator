@@ -11,6 +11,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 // Define variables
+// 定义变量
 
 class VariableProperty(private val collector: MutableSet<Variable>? = null)
     : ReadOnlyProperty<Any?, Variable> {
@@ -32,6 +33,7 @@ fun point(vararg pairs: Pair<Variable, Number>) =
     NamedExpressionVector(pairs.associate { (v, x) -> v to Constant(x.toDouble()) })
 
 // variable collector
+// 变量收集器
 
 fun variableCollector() = sortedSetOf<Variable>()
 

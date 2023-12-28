@@ -5,7 +5,11 @@ import org.mechdancer.algebra.function.vector.plus
 import org.mechdancer.algebra.function.vector.times
 import org.mechdancer.algebra.implement.vector.listVectorOfZero
 
-/** Momentum method := gain + low pass filter */
+/**
+ * Momentum method := gain + low pass filter
+ *
+ * 动量法 := 增益 + 低通滤波
+ */
 @Suppress("NonAsciiCharacters")
 class MomentumMethod(
     dim: Int,

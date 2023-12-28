@@ -11,7 +11,11 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.streams.toList
 
-/** Hessian matrix */
+/**
+ * Hessian matrix
+ *
+ * 海森矩阵
+ */
 @JvmInline value class HessianMatrix(
     private val expressions: List<Expression>
 ) : ExpressionStruct<Matrix> {

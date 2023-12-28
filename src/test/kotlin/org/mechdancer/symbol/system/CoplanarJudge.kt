@@ -10,16 +10,22 @@ import org.mechdancer.symbol.networksInfo
 import org.mechdancer.symbol.paintFrame3
 import kotlin.math.*
 
-/** Construct unordered tuples */
+/**
+ * Construct unordered tuples
+ *
+ * 构造无序的二元组
+ */
 fun <T : Comparable<T>> sortedPairOf(a: T, b: T) =
     if (a < b) a to b else b to a
 
 /** Calculate the degree of coplanarity of 4 points based on the set of named side lengths between 4 points */
+/** 根据 4 点间具名的边长集，计算 4 点共面程度 */
 fun <T : Comparable<T>> coplanarJudgeWithEdges(
     vararg edges: Pair<Pair<T, T>, Double>
 ) = coplanarJudgeWithEdges(edges.toMap())
 
 /** Calculate the degree of coplanarity of 4 points based on the set of named side lengths between 4 points */
+/** 根据 4 点间具名的边长集，计算 4 点共面程度 */
 fun <T : Comparable<T>> coplanarJudgeWithEdges(
     edges: Map<Pair<T, T>, Double>
 ): Double {
@@ -37,12 +43,14 @@ fun <T : Comparable<T>> coplanarJudgeWithEdges(
 }
 
 /** Calculate the degree of coplanarity of 4 points based on the unnamed set of side lengths between 4 points */
+/** 根据 4 点间不具名的边长集，计算 4 点共面程度 */
 fun coplanarJudgeWithEdges(vararg edges: Double): Double {
     require(edges.size == 6)
 
     operator fun DoubleArray.component6() = this[5]
 
     // Helen's formula
+    // 海伦公式
     fun heron(a: Double, b: Double, c: Double) =
         ((a + b + c) / 2).let { p -> sqrt(p * (p - a) * (p - b) * (p - c)) }
 

@@ -14,7 +14,10 @@ import org.mechdancer.symbol.linear.NamedExpressionVector
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
-/** 生成网络连接信息字符串 */
+/** Generate network connection information string
+ *
+ * 生成网络连接信息字符串
+ */
 fun RemoteHub.networksInfo() =
     with(components) {
         "${must<Name>().field} opened ${must<Networks>().view.size} networks on ${must<MulticastSockets>().address}"
@@ -27,6 +30,7 @@ private object PaintCommand : Command {
     override val id = 6.toByte()
 }
 
+//Draw any content
 // 画任意内容
 private fun RemoteHub.paint(
     topic: String,
@@ -44,6 +48,8 @@ private fun RemoteHub.paint(
 }
 
 /**
+ * Draw a one-dimensional signal
+ *
  * 画一维信号
  */
 fun RemoteHub.paint(
@@ -56,6 +62,8 @@ fun RemoteHub.paint(
 }
 
 /**
+ * Draw two-dimensional signals
+ *
  * 画二维信号
  */
 fun RemoteHub.paint(
@@ -71,6 +79,8 @@ fun RemoteHub.paint(
 
 /**
  * Draw 3D signals
+ *
+ * 画三维信号
  */
 fun RemoteHub.paint(
     topic: String,
@@ -87,6 +97,8 @@ fun RemoteHub.paint(
 
 /**
  * Draw 3D signals
+ *
+ * 画三维信号
  */
 fun RemoteHub.paint(
     topic: String,
@@ -100,6 +112,8 @@ fun RemoteHub.paint(
 }
 
 /**
+ * Draw two-dimensional signals
+ *
  * 画二维信号
  */
 fun RemoteHub.paintFrame2(
@@ -120,6 +134,8 @@ fun RemoteHub.paintFrame2(
 
 /**
  * Draw 3D signals
+ *
+ * 画三维信号
  */
 fun RemoteHub.paintFrame3(
     topic: String,
@@ -141,6 +157,8 @@ fun RemoteHub.paintFrame3(
 
 /**
  * The field is drawn as a collection of one-dimensional signals
+ *
+ * 场画成一维信号的集合
  */
 fun RemoteHub.paint(expressionVector: NamedExpressionVector) {
     for ((v, e) in expressionVector.expressions)

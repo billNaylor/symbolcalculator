@@ -9,16 +9,22 @@ import org.mechdancer.symbol.variable
 import kotlin.math.abs
 import kotlin.math.sign
 
-/** Construct a value range structure */
+/**
+ * Construct a value range structure
+ *
+ * 构造取值范围结构
+ */
 operator fun Variable.get(min: Constant, max: Constant) =
     Domain(this, min, max)
 
 /** Optimization step function:= current position -> (new position, actual step size) */
+/** 优化步骤函数 := 当前位置 -> (新位置, 实际步长) */
 typealias OptimizeStep<T> = (T) -> Pair<T, Double>
 
 /** Use Newton iteration to find the minimum value of the one-variable function [f]
  * with respect to the variable [v]
  */
+/** 使用牛顿迭代求关于变量 [v] 的一元函数 [f] 极小值 */
 fun newton(
     f: Expression,
     v: Variable
@@ -40,6 +46,7 @@ fun newton(
 }
 
 /** Determining the optimal rate of descent using Newton's method */
+/** 使用牛顿法确定最优下降率 */
 internal fun fastestWithNewton(
     e: Expression,
     p: NamedExpressionVector,
@@ -52,6 +59,7 @@ internal fun fastestWithNewton(
 }
 
 /** Mapping inequality constraints and steepest descent using Newton's method */
+/** 映射不等式约束并用牛顿法最速下降 */
 internal inline fun Array<out Domain>.fastestOf(
     e: Expression,
     p: NamedExpressionVector,
@@ -68,6 +76,7 @@ internal inline fun Array<out Domain>.fastestOf(
 }
 
 /** Optimization calculation */
+/** 优化计算 */
 inline fun <T> optimize(
     init: T,
     maxTimes: Int,
@@ -84,6 +93,7 @@ inline fun <T> optimize(
 }
 
 /** Recursive calculation */
+/** 递推计算 */
 fun <T> recurrence(init: T, block: (T) -> T) =
     sequence {
         var t = init
@@ -94,6 +104,7 @@ fun <T> recurrence(init: T, block: (T) -> T) =
     }
 
 /** Convergence or exit */
+/** 收敛或退出 */
 inline fun <T : Any> Sequence<T>.firstOrLast(block: (T) -> Boolean): T {
     var last: T? = null
     for (t in this) {
@@ -104,5 +115,6 @@ inline fun <T : Any> Sequence<T>.firstOrLast(block: (T) -> Boolean): T {
 }
 
 /** Collection conditions */
+/** 收集条件 */
 inline fun conditions(block: ConditionCollector.() -> Unit) =
     ConditionCollector().also(block).build()

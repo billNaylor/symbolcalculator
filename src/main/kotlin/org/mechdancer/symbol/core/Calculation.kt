@@ -7,7 +7,11 @@ import org.mechdancer.symbol.mapParallel
 import org.mechdancer.symbol.sumParallel
 import kotlin.math.sign
 
-/** Operation */
+/**
+ * Operation
+ *
+ * 运算
+ */
 sealed class Calculation : FunctionExpression {
     protected abstract fun timesWithoutCheck(c: Constant): Expression
     protected abstract fun divWithoutCheck(c: Constant): Expression
@@ -32,15 +36,18 @@ sealed class Calculation : FunctionExpression {
 }
 
 // The sum combiner does not support non-top-level typealias and can only be placed here.
+// 和式合并器，不支持非顶层的 typealias，只能放在这里
 private typealias SumCollector = HashMap<Expression, Constant>
 
 // Merging algorithm, adding coefficients of similar items or adding exponentials of power
 // functions with the same base
+// 合并算法，同类项系数相加或同底幂函数指数相加
 private fun <T : Expression> HashMap<T, Constant>.merge(e: T, b: Constant) {
     compute(e) { _, a -> (a?.plus(b) ?: b).takeIf { it != `0` } }
 }
 
 /** Japanese style */
+/** 和式 */
 class Sum private constructor(
     internal val products: Set<ProductExpression>,
     internal val tail: Constant
@@ -98,11 +105,14 @@ class Sum private constructor(
                 1    -> list.first()
                 else -> {
                     // Merger of similar items
+                    // 合并同类项
                     val collector = hashMapOf<Expression, Constant>()
                     for (e in list) collector += e
                     // The so-called constants are multiples of 1
+                    // 所谓常数就是 1 的倍数
                     val tail = collector.remove(`1`) ?: `0`
                     // Multiplication of a product expression by a constant must still be a product expression
+                    // 积式与常数相乘必然还是积式
                     val products = collector
                         .asSequence()
                         .map { (e, k) -> Product[e, k] as ProductExpression }
@@ -144,6 +154,7 @@ class Sum private constructor(
 }
 
 /** product formula */
+/** 积式 */
 class Product private constructor(
     internal val factors: Set<FactorExpression>,
     internal val times: Constant
@@ -247,6 +258,7 @@ class Product private constructor(
         }
 
         // as the order of the derivative operator
+        // 作为导数算子的阶数
         private fun isDifferential(p: ProductExpression) =
             p is Differential || p is Power && p.member is Differential
 
@@ -279,6 +291,7 @@ class Product private constructor(
             fun build(): Expression {
                 // if (tail == .0) return zero // In fact, there is no need to do this check.
                 //   If the coefficient is 0, the outer part will be eliminated directly.
+                // 实际上不必做这个检查，若系数为 0，外部将直接消去
                 val products = powers.map { (e, k) -> Power[e, k] }
                 return when {
                     products.isEmpty()                -> tail
@@ -298,23 +311,29 @@ class Product private constructor(
 
             // Consider that two independent variables are always irrelevant, du / dv === 0, check the elimination caused by derivation
             // Parameter [dv] is the microelement that changes the index of this iteration
+            // 认为两个独立变量总是无关，du / dv === 0，检查求导导致的消去
+            // 参数 [dv] 是此次迭代改变指数的微元
             private fun check(dv: Differential) {
                 // Check the sign of the micro element
                 val nn = powers[dv]?.re?.sign
                 when {
                     // If the micro-element has been eliminated, it leaves the relevant micro-element set.
+                    // 微元已经消去，则离开相关微元集
                     nn == null
                     -> differentials -= dv
                     // If all other micro elements have the same number, the new micro element is added to the related micro element set
+                    // 如果所有其他微元同号，新微元加入相关微元集
                     differentials.all { powers[it]?.re?.sign == nn }
                     -> differentials += dv
                     // Otherwise, the factor is set to 0 directly and will be eliminated in the outer loop.
+                    // 否则因子直接置 0，将在外部循环中消去
                     else
                     -> tail = `0`
                 }
             }
 
             // Handle multiplication factors, separate functions to avoid recursion
+            // 处理乘以因子，独立函数以避免递归
             private fun inner(e: FactorExpression) {
                 when (e) {
                     is Differential   -> {

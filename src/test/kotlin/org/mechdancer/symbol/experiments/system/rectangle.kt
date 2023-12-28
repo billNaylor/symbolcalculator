@@ -15,6 +15,7 @@ fun main() = simulate {
         thermometer { 15.0 }
     }
     maxMeasure = 30.0
+    // 6 fixed labels form a rectangle, and 1 moving label moves along the diagonal of the rectangle
     // 6 个固定标签组成矩形，1 个移动标签沿矩形对角线运动
     val lx = sqrt(.5)
     val ly = sqrt(1 - lx * lx)

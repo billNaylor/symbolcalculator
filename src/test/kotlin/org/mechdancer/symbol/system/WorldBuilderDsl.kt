@@ -7,17 +7,21 @@ import org.mechdancer.algebra.implement.vector.vector3DOfZero
 
 class WorldBuilderDsl private constructor() {
     /** initial ambient air temperature */
+    /** 初始环境气温 */
     var temperature = 15.0
 
     /** Ranging standard deviation */
+    /** 测距标准差 */
     var sigmaMeasure = .0
 
     /** Label deployment position standard deviation */
+    /** 标签部署位置标准差 */
     var sigmaDeploy = vector3DOfZero()
 
     private var thermometer = { t: Double -> t }
 
     /** temperature calculation method */
+    /** 温度计算法 */
     fun thermometer(block: (Double) -> Double) {
         thermometer = block
     }

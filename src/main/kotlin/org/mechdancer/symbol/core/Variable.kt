@@ -2,7 +2,11 @@ package org.mechdancer.symbol.core
 
 import org.mechdancer.algebra.core.Vector
 
-/** variable named [name] */
+/**
+ * variable named [name]
+ *
+ * 名为 [name] 的变量
+ */
 @JvmInline value class Variable(val name: String)
     : FactorExpression,
       BaseExpression,
