@@ -303,7 +303,7 @@ class Product private constructor(
                 val nn = powers[dv]?.re?.sign
                 when {
                     // If the micro-element has been eliminated, it leaves the relevant micro-element set.
-                    n == null
+                    nn == null
                     -> differentials -= dv
                     // If all other micro elements have the same number, the new micro element is added to the related micro element set
                     differentials.all { powers[it]?.re?.sign == nn }

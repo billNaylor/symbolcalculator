@@ -1,7 +1,7 @@
 package org.mechdancer.symbol.system
 
 /**
- * 每次测量在两个定位点之间建立一个关系
+ * Each measurement establishes a relationship between two anchor points
  */
 data class Measure(
     val a: Position,
@@ -9,7 +9,7 @@ data class Measure(
     val time: Long,
     val distance: Double
 ) {
-    init { // 这种关系对两个标签来说是无序的
+    init { // This relationship is unordered for both labels
         require(a.beacon.id < b.beacon.id)
     }
 }

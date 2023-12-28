@@ -6,18 +6,18 @@ import org.mechdancer.algebra.implement.vector.Vector3D
 import org.mechdancer.algebra.implement.vector.vector3DOfZero
 
 class WorldBuilderDsl private constructor() {
-    /** 初始环境气温 */
+    /** initial ambient air temperature */
     var temperature = 15.0
 
-    /** 测距标准差 */
+    /** Ranging standard deviation */
     var sigmaMeasure = .0
 
-    /** 标签部署位置标准差 */
+    /** Label deployment position standard deviation */
     var sigmaDeploy = vector3DOfZero()
 
     private var thermometer = { t: Double -> t }
 
-    /** 温度计算法 */
+    /** temperature calculation method */
     fun thermometer(block: (Double) -> Double) {
         thermometer = block
     }

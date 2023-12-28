@@ -23,7 +23,7 @@ private val interval = maxMeasure / sqrt(2.0) * .99
 //private val upperRange = (.8 * interval).roundToInt()
 //private val zList = listOf(-3.2, -2.4, -1.6)
 //
-//// 地图
+//// map
 //private val beacons =
 //    (matrix {
 //        row(-1, -1, 0)
@@ -35,7 +35,7 @@ private val interval = maxMeasure / sqrt(2.0) * .99
 private val upperRange = (.8 * interval).roundToInt()
 private val zList = listOf(-3.2, -2.4, -1.6)
 
-// 地图
+// map
 private val beacons =
     (matrix {
         row(-2, -1, 0)
@@ -46,7 +46,7 @@ private val beacons =
         row(+2, +1, 0)
     } * (interval / 2)).rows.map(Vector::to3D)
 
-// 噪声
+// noise
 
 private val engine = java.util.Random()
 private fun gaussian(sigma: Double) = sigma * engine.nextGaussian()
@@ -84,7 +84,7 @@ fun main() {
             }
 }
 
-// 统计 -> 一范数，均值，标准差
+// Statistics -> One norm, mean, standard deviation
 private fun Collection<Vector3D>.statistic(): Triple<Vector, Vector, Vector> {
     var abs = first().toList().map(::abs).toListVector()
     var expect = first()

@@ -14,13 +14,13 @@ import kotlin.math.sign
 import kotlin.math.sqrt
 
 /**
- * 测距仿真
+ * Ranging simulation
  *
- * @param layout 固定标签部署结构
- * @param temperature 气温
- * @param thermometer 温度计
- * @param maxMeasureTime 最大测量时间
- * @param sigmaMeasure 测距误差标准差
+ * @param layout fixed label deployment structure
+ * @param temperature temperature
+ * @param thermometer thermometer
+ * @param maxMeasureTime maximum measurement time
+ * @param sigmaMeasure standard deviation of ranging error
  */
 class SimulationWorld internal constructor(
     private val layout: Map<Beacon, Vector3D>,
@@ -29,13 +29,13 @@ class SimulationWorld internal constructor(
     private val maxMeasureTime: Long,
     private val sigmaMeasure: Double
 ) {
-    // 缓存固定标签之间测距
+    // Cache fixed distance between tags
     private var edges =
         mapOf<Pair<Beacon, Beacon>, Double>()
 
-    /** 预测量（固定标签之间测距） */
+    /** Predict (fixed distance between labels) */
     fun preMeasures(): Map<Pair<Position, Position>, Double> {
-        // 更新固定标签之间声波飞行时间
+        // Updated sonic flight time between fixed tags
         edges = layout.toList().buildEdges(temperature, maxMeasureTime)
 
         val c0 = soundVelocity(thermometer(temperature))
@@ -45,7 +45,7 @@ class SimulationWorld internal constructor(
         }
     }
 
-    /** 位于 [p] 处的移动标签 [mobile] 发起一次测量 */
+    /** Mobile tag [mobile] at [p] initiates a measurement */
     fun measure(mobile: Position, p: Vector3D) =
         sequence {
             val c0 = soundVelocity(thermometer(temperature))
@@ -57,12 +57,12 @@ class SimulationWorld internal constructor(
             }
         }
 
-    /** 固定标签结构（用于画图） */
+    /** Fixed label structure (for drawing) */
     fun grid() = edges.keys.map { (a, b) ->
         listOf(layout.getValue(a), layout.getValue(b))
     }
 
-    /** 将一些标签计算位置覆盖到固定标签结构 */
+    /** Override some label calculation positions to fixed label structure */
     fun grid(map: Map<Beacon, Vector3D>) =
         sequence {
             val groups = map.keys.groupBy { it in layout }
@@ -98,17 +98,18 @@ class SimulationWorld internal constructor(
         private val random = Random()
         private fun gaussian(sigma: Double = 1.0) = random.nextGaussian() * sigma
 
-        /** [t]℃ 时的声速 */
+        /** [t]℃ speed of sound */
         fun soundVelocity(t: Double) = 20.048 * sqrt(t + 273.15)
 
         private val collector = variableCollector()
-        private val t by variable(collector) // 飞行时间
-        private val x by variable(collector) // 有效声音方向
+        private val t by variable(collector) // flight duration
+        private val x by variable(collector) // Effective sound direction
         private val y by variable(collector) //
         private val z by variable(collector) //
         private val space = collector.toSpace()
 
-        /** 传声模型 := 均匀风场 [wind] 中，声音按声速 [c] 通过向量 [s] 的时间 */
+        /** Sound transmission model := In a uniform wind field [wind],
+         * the time for sound to pass through the vector [s] at the speed of sound [c] */
         fun flightDuration(s: Vector3D, wind: Vector3D, c: Double): Double {
             val t0 = (s.length / c).takeIf { it > 0 } ?: return .0
             if (wind.isZero()) return t0

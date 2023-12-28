@@ -16,26 +16,26 @@ import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.random.Random.Default.nextDouble
 
-/** 由最大可测 [maxMeasure] 长度的标签组成的定位系统 */
+/** A positioning system consisting of tags with a maximum measurable [maxMeasure] length */
 class LocatingSystem(private val maxMeasure: Double) {
-    // 画图子程序
+    // Drawing subroutine
     var painter: (Map<Beacon, Vector3D>) -> Unit = {}
 
-    // 长度存储
+    // Length storage
     private val measures =
         hashMapOf<Pair<Position, Position>, MutableList<Double>>()
 
-    // 坐标存储
+    //Coordinate storage
     private val positions =
         hashMapOf<Beacon, SortedMap<Long, Vector3D>>()
 
-    // 关系缓存，用于加速查询
+    //Relationship cache, used to speed up queries
     private val relationMemory =
         hashMapOf<Position, SortedSet<Position>>()
 
-    /** 存储 [a] 到 [b] 在 [t] 时刻的测距 [l] */
+    /** Store the ranging [l] from [a] to [b] at time [t] */
     operator fun set(a: Position, b: Position, t: Long, l: Double) {
-        // 对于一个新的位置点，复制同一个标签已知的最新坐标，或随机产生一个坐标
+        // For a new location point, copy the latest known coordinates of the same label, or randomly generate a coordinate
         fun Position.copyLastOrRandom() {
             positions.update(
                 beacon,
@@ -51,7 +51,7 @@ class LocatingSystem(private val maxMeasure: Double) {
         relationMemory.update(b, { it += a }, { sortedSetOf(b, a) })
     }
 
-    /** 存储 [t] 时刻的一组测距 [measures] */
+    /** Stores a set of ranging measurements at time [t] of [measures] */
     operator fun set(t: Long, measures: Map<Pair<Position, Position>, Double>) {
         for ((pair, l) in measures) {
             val (a, b) = pair
@@ -59,12 +59,12 @@ class LocatingSystem(private val maxMeasure: Double) {
         }
     }
 
-    /** 使用所有已知的测量数据，优化所有坐标 */
+    /** Optimize all coordinates using all known measurement data */
     fun optimize() {
         calculate(positions.flatMap { (beacon, set) -> set.keys.map(beacon::move) }.toSortedSet())
     }
 
-    /** 优化某标签和与此标签直接测距的所有标签 */
+    /** Optimize a label and all labels directly ranging from this label */
     operator fun get(beacon: Beacon): Map<Beacon, Vector3D> {
         val p = positions[beacon]?.lastKey()?.let(beacon::move)
                 ?: return mapOf(beacon to vector3DOfZero())
@@ -74,41 +74,41 @@ class LocatingSystem(private val maxMeasure: Double) {
         }
     }
 
-    /** 获得一份深拷贝的完整位置点表 */
+    /** Get a deep copy of the complete location list */
     fun copy() = positions.mapValues { (_, map) -> map.toSortedMap() }
 
-    /** 获得每个标签最新位置列表 */
+    /** Get the latest location list for each tag */
     fun newest() = positions.mapValues { (_, map) -> map[map.lastKey()]!! }
 
-    // 使用关心的部分关系更新坐标
+    // Update coordinates using the partial relationship you care about
     private fun calculate(targets: SortedSet<Position>)
         : Map<Position, Vector3D> {
-        // 收集优化条件
+        // Collect optimization conditions
         val (errors, domain, init) = conditions {
-            // 狭义上三角遍历
+            // Triangular traversal in the narrow sense
             val list = targets.toList()
             for (i in list.indices) for (j in i + 1 until list.size) {
                 val a = list[i]
                 val b = list[j]
-                // 若两点间有测距数据，对测距取平均，添加到方程组
+                // If there is distance measurement data between two points, average the distance measurement and add it to the system of equations
                 measures[a to b]?.average()?.let { l -> this += (a euclid b) - l }
-                // 否则若其中一个是固定标签，认为两个标签之间距离大于可测极限长度，添加到不等式约束
+                // Otherwise, if one of them is a fixed label, it is considered that the distance between the two labels is greater than the measurable limit length, and added to the inequality constraint
                 ?: if (a.isStatic() || b.isStatic())
                     this[domain(maxMeasure - (a euclid b))] = maxMeasure - (positions[a]!! euclid positions[b]!!)
             }
-            // 补充初始值
+            //Add initial value
             for (target in targets)
                 this[target.space] = positions[target]!!
         }
-        // 确定未知数空间
+        // Determine the unknown number space
         val space = variables(init.expressions.keys)
-        // 构造优化步骤函数
+        //Construct optimization step function
         val f = when {
             domain.isEmpty() -> batchGD(errors.sum(), space, *domain, controller = NagMethod(space.dim, 1.0, .99))
-            space.dim <= 24  -> dampingNewton(errors.sum(), space, *domain)
-            else             -> fastestBatchGD(errors.sum(), space, *domain)
+            space.dim <= 24 -> dampingNewton(errors.sum(), space, *domain)
+            else -> fastestBatchGD(errors.sum(), space, *domain)
         }
-        // 优化迭代
+        // Optimize iteration
         val result = recurrence(init to .0) { (p, _) -> f(p) }
             .onEach { (p, _) ->
                 targets.associate { b -> b.beacon to p.toVector(b.space).to3D() }.let(painter)
@@ -116,35 +116,35 @@ class LocatingSystem(private val maxMeasure: Double) {
             .take(1000)
             .firstOrLast { (_, step) -> step < 4e-4 }
             .first
-        // 优化解整理为坐标
+        // The optimization solution is organized into coordinates
         return targets.associateWith { p ->
             result.toVector(p.space).to3D().also { positions[p] = it }
         }
     }
 
-    // 锁定其他点，定位一个位置点
+    // Lock other points and locate a position point
     private fun calculate(p: Position, beacons: Set<Position>): Vector3D {
-        // 收集优化条件
+        // Collect optimization conditions
         val (errors, domains, init) = conditions {
             for (b in beacons) this += (p euclid positions[b]!!) - measures[sortedPairOf(p, b)]!!.average()
             this[p.space] = positions[p]!!
         }
-        // 构造优化步骤函数
+        //Construct optimization step function
         val f = dampingNewton(errors.sum(), variables(init.expressions.keys), *domains)
         val result = optimize(init, 1000, 2e-4, f)
         return result.toVector(p.space).to3D()
     }
 
     private companion object {
-        // 修改哈希映射
+        //Modify hash map
         fun <TK, TV> HashMap<TK, TV>.update(key: TK, block: (TV) -> Unit, default: () -> TV) =
             compute(key) { _, last -> last?.also(block) ?: default() }
 
-        // 查找二维表
+        // Find two-dimensional table
         operator fun <T> Map<Beacon, Map<Long, T>>.get(p: Position) =
             get(p.beacon)?.get(p.time)
 
-        // 修改二维表
+        //Modify the two-dimensional table
         operator fun <T> HashMap<Beacon, SortedMap<Long, T>>.set(p: Position, t: T) =
             update(p.beacon, { it[p.time] = t }, { sortedMapOf(p.time to t) })
     }

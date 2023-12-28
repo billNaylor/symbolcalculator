@@ -70,7 +70,7 @@ fun RemoteHub.paint(
 }
 
 /**
- * 画三维信号
+ * Draw 3D signals
  */
 fun RemoteHub.paint(
     topic: String,
@@ -86,7 +86,7 @@ fun RemoteHub.paint(
 }
 
 /**
- * 画三维信号
+ * Draw 3D signals
  */
 fun RemoteHub.paint(
     topic: String,
@@ -119,7 +119,7 @@ fun RemoteHub.paintFrame2(
 }
 
 /**
- * 画三维信号
+ * Draw 3D signals
  */
 fun RemoteHub.paintFrame3(
     topic: String,
@@ -140,7 +140,7 @@ fun RemoteHub.paintFrame3(
 }
 
 /**
- * 场画成一维信号的集合
+ * The field is drawn as a collection of one-dimensional signals
  */
 fun RemoteHub.paint(expressionVector: NamedExpressionVector) {
     for ((v, e) in expressionVector.expressions)

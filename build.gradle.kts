@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.71"
+    //kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.9.22"
     `maven-publish`
 }
 
@@ -15,13 +16,13 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    // 矩阵运算
+    // Matrix Operations
     implementation("org.mechdancer", "linearalgebra", "0.2.8-snapshot-3")
 
     testImplementation("junit", "junit", "+")
     testImplementation(kotlin("test-junit"))
 
-    // 支持网络工具
+    // Support network tools
     testImplementation(kotlin("reflect"))
     testImplementation("org.mechdancer", "dependency", "+")
     testImplementation("org.mechdancer", "remote", "+")
@@ -30,14 +31,14 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
 }
 
-// 源码导出任务
+// Source code export task
 val sourceTaskName = "sourcesJar"
 task<Jar>(sourceTaskName) {
     archiveClassifier.set("sources")
@@ -47,7 +48,7 @@ task<Jar>(sourceTaskName) {
 }
 tasks["jar"].dependsOn(sourceTaskName)
 
-// 默认内联类
+// Default inline class
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes")
