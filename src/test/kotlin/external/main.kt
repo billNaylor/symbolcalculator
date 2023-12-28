@@ -46,7 +46,7 @@ class Signal(val t0: Int = 0, val values: Vector) {
     infix fun dot(others: Signal): Double {
         val begin = min(t0, others.t0)
         val end = max(t0 + length, others.t0 + others.length)
-        return (begin until end).sumByDouble { this[it] * others[it] }
+        return (begin until end).sumOf { this[it] * others[it] }
     }
 
     infix fun xcorr(others: Signal): Signal {
@@ -78,7 +78,7 @@ fun main() {
         environment.forEachIndexed { i, k ->
             output += signal.delay(i) * k
         }
-        var memory = .0
+//        var memory = .0
         output = output.noise(.5)
 //            .filter {
 //            memory = it * .1 + memory * .9

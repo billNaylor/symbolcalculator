@@ -2,7 +2,7 @@ package org.mechdancer.symbol.core
 
 import org.mechdancer.algebra.core.Vector
 
-inline class Differential(val variable: Variable)
+@JvmInline value class Differential(val variable: Variable)
     : FactorExpression,
       BaseExpression {
     override fun d() = Constant.`0`

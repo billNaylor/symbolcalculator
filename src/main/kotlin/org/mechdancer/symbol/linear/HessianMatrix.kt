@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 import kotlin.streams.toList
 
 /** Hessian matrix */
-inline class HessianMatrix(
+@JvmInline value class HessianMatrix(
     private val expressions: List<Expression>
 ) : ExpressionStruct<Matrix> {
     override fun toFunction(space: VariableSpace): (Vector) -> Matrix {

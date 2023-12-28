@@ -139,7 +139,7 @@ class Sum private constructor(
             if (size > parallelism)
                 { t: T -> sumParallel { it(t) } + tail.re }
             else
-                { t: T -> sumByDouble { it(t) } + tail.re }
+                { t: T -> sumOf { it(t) } + tail.re }
     }
 }
 

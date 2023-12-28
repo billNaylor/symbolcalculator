@@ -12,7 +12,7 @@ import org.mechdancer.symbol.times
 import kotlin.streams.toList
 
 /** unnamed vector of simplified expressions */
-inline class ExpressionVector(
+@JvmInline value class ExpressionVector(
     val expressions: List<Expression>
 ) : ExpressionStruct<Vector> {
     fun length() = sqrt(expressions.sumBy { it * it })

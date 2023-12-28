@@ -8,7 +8,7 @@ import org.mechdancer.symbol.mapParallel
 import org.mechdancer.symbol.times
 
 /** Hessian operator */
-inline class Hessian(val space: VariableSpace) {
+@JvmInline value class Hessian(val space: VariableSpace) {
     /** Find the Hessian matrix of [f] quantity field on this variable space */
     operator fun times(f: Expression) =
         hessian(f.d().d(), space)

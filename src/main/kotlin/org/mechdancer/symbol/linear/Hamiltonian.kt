@@ -6,7 +6,7 @@ import org.mechdancer.symbol.core.VariableSpace
 import org.mechdancer.symbol.div
 
 /** Hamiltonian operator (gradient operator) */
-inline class Hamiltonian(private val space: VariableSpace) {
+@JvmInline value class Hamiltonian(private val space: VariableSpace) {
     /** Find the gradient of the [f] quantity field on this variable space */
     operator fun times(f: Expression) =
         gradient(f.d(), space)

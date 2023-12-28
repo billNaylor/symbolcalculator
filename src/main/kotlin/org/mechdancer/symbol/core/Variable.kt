@@ -3,7 +3,7 @@ package org.mechdancer.symbol.core
 import org.mechdancer.algebra.core.Vector
 
 /** variable named [name] */
-inline class Variable(val name: String)
+@JvmInline value class Variable(val name: String)
     : FactorExpression,
       BaseExpression,
       ExponentialExpression,

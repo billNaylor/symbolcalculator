@@ -10,8 +10,15 @@ group = "org.mechdancer"
 version = "0.4.0"
 
 repositories {
+    google()
     mavenCentral()
-    jcenter()
+    jcenter() {
+        content {
+            includeModule("org.mechdancer", "linearalgebra")
+            includeModule("org.mechdancer", "remote")
+            includeModule("org.slf4j", "slf4j-api")
+        }
+    }
 }
 
 dependencies {

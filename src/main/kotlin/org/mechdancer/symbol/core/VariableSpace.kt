@@ -6,7 +6,7 @@ import org.mechdancer.symbol.linear.Hessian
 import org.mechdancer.symbol.linear.NamedExpressionVector
 
 /** Variable space */
-inline class VariableSpace(val variables: List<Variable>) {
+@JvmInline value class VariableSpace(val variables: List<Variable>) {
     /** Dimensions of space */
     val dim get() = variables.size
 

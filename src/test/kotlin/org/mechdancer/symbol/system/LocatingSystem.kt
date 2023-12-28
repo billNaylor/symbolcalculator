@@ -33,8 +33,8 @@ class LocatingSystem(private val maxMeasure: Double) {
     private val relationMemory =
         hashMapOf<Position, SortedSet<Position>>()
 
-    /** Store the ranging [l] from [a] to [b] at time [t] */
-    operator fun set(a: Position, b: Position, t: Long, l: Double) {
+    /** Store the ranging [l] from [a] to [b] at time [time] */
+    operator fun set(a: Position, b: Position, time: Long, l: Double) {
         // For a new location point, copy the latest known coordinates of the same label, or randomly generate a coordinate
         fun Position.copyLastOrRandom() {
             positions.update(
@@ -92,9 +92,11 @@ class LocatingSystem(private val maxMeasure: Double) {
                 val b = list[j]
                 // If there is distance measurement data between two points, average the distance measurement and add it to the system of equations
                 measures[a to b]?.average()?.let { l -> this += (a euclid b) - l }
-                // Otherwise, if one of them is a fixed label, it is considered that the distance between the two labels is greater than the measurable limit length, and added to the inequality constraint
-                ?: if (a.isStatic() || b.isStatic())
-                    this[domain(maxMeasure - (a euclid b))] = maxMeasure - (positions[a]!! euclid positions[b]!!)
+                // Otherwise, if one of them is a fixed label,
+                // it is considered that the distance between the two labels is greater than the measurable limit length,
+                // and added to the inequality constraint
+                //?: if (a.isStatic() || b.isStatic())
+                //    this[domain(maxMeasure - (a euclid b))] = maxMeasure - (positions[a]!! euclid positions[b]!!)
             }
             //Add initial value
             for (target in targets)
